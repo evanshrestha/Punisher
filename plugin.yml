@@ -1,0 +1,8 @@
+name: Punisher
+main: me.clannoobz.punisher.punishermain
+version: 0.1
+description: Punishes people
+commands:
+  punisher:
+    description: Tells if loaded
+    usage: 
