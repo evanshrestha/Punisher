@@ -5,8 +5,12 @@ author:
 #***********
 #*clannoobz*
 #***********
-description: Punishes people
+description: >
+Punishes people if they do something wrong; griefing, breaking a rule, etc.
+Also notifies when a punishment is to happen.
 commands:
   punisher:
-    description: Tells if loaded
-    usage: 
+    description: Tells version loaded.
+    usage: >
+    /punisher
+    /punisher reload
