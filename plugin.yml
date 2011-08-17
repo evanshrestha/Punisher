@@ -1,6 +1,10 @@
 name: Punisher
 main: me.clannoobz.punisher.punishermain
 version: 0.1
+author:
+#***********
+#*clannoobz*
+#***********
 description: Punishes people
 commands:
   punisher:
