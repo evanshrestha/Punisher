@@ -29,7 +29,7 @@ public class punisherblocklistener extends BlockListener {
 				String playername = player.getName();
 				server.broadcastMessage(ChatColor.RED + "[Punisher] " + playername + " has placed " + block.getType() + " (" + block.getTypeId() + ")" + " in world: " + block.getWorld().getName() + " at " + block.getX() + "," + block.getY() + "," + block.getZ() + ".");
 				log.warning("[Punisher] " + playername + " has placed " + block.getType() + " (" + block.getTypeId() + ")" + " in world: " + block.getWorld().getName() + " at " + block.getX() + "," + block.getY() + "," + block.getZ() + ".");
-				if (plugin.kickonplace.equals(true));
+				if (plugin.kickonplace = true)
 				{
 					player.kickPlayer(plugin.kickmessage);
 				}

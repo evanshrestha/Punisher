@@ -79,7 +79,7 @@ public class punishermain extends JavaPlugin{
 		kickonplace = config.getBoolean("Kick-On-Place", true);
 		kickmessage = config.getString("Kick-Message", kickmessage);
 		censoredwords = config.getString("Censored-Words", censoredwords);
-		log.info("[Punisher] Config Reloaded.");
+		log.info("[Punisher] Config Reloaded");
 		}
 	
 @Override
@@ -104,12 +104,12 @@ private void setupPermissions() { if (permissionHandler != null) { return; }
 Plugin permissionsPlugin = this.getServer().getPluginManager().getPlugin("Permissions");
 
 if (permissionsPlugin == null) {
-    log.info("Permission system not detected, defaulting to OP");
+    log.info("[Punisher] Permission system not detected, defaulting to OP");
     return;
 }
 
 permissionHandler = ((Permissions) permissionsPlugin).getHandler();
-log.info("Found and will use plugin "+((Permissions)permissionsPlugin).getDescription().getFullName());
+log.info("[Punisher] Found and will use plugin "+((Permissions)permissionsPlugin).getDescription().getFullName());
 } 
 
 public PermissionHandler permissionHandler;
@@ -151,7 +151,10 @@ public boolean check(CommandSender sender, String permNode)
 				{
 					if (check(sender, "punisher.reload")) {
 						reloadConfig();
+						if(sender instanceof Player)
+						{
 						sender.sendMessage(ChatColor.RED + "[Punisher] Config Reloaded");
+						}
 						return false;
 					}
 					if (!check(sender, "punisher.reload")) {
