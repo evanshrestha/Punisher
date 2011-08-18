@@ -17,8 +17,23 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 
 import java.io.File;
 
-
-
+/**
+ * Punisher version 0.x
+ * Copyright (C) 2011  Evan 'Clannoobz' Shrestha <clannoobz@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Permissions Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Permissions Public License for more details.
+ *
+ * You should have received a copy of the GNU Permissions Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 public class punishermain extends JavaPlugin{
 	public static PermissionHandler Permissions = null;
@@ -52,6 +67,19 @@ public class punishermain extends JavaPlugin{
 		kickmessage = config.getString("Kick-Message", kickmessage);
 		censoredwords = config.getString("Censored-Words", censoredwords);
 		log.info("[Punisher] Config Loaded.");
+		}
+	private void reloadConfig() {
+		try{
+		config.load();
+		}
+		catch(Exception e) { 
+			log.info("[Punisher] An error has occured while trying to load config.");
+		}
+		notify = config.getString("Notify", notify);
+		kickonplace = config.getBoolean("Kick-On-Place", true);
+		kickmessage = config.getString("Kick-Message", kickmessage);
+		censoredwords = config.getString("Censored-Words", censoredwords);
+		log.info("[Punisher] Config Reloaded.");
 		}
 	
 @Override
@@ -122,7 +150,7 @@ public boolean check(CommandSender sender, String permNode)
 				if ((args.length == 1) && (args[0].equalsIgnoreCase("reload")))
 				{
 					if (check(sender, "punisher.reload")) {
-						loadConfig();
+						reloadConfig();
 						sender.sendMessage(ChatColor.RED + "[Punisher] Config Reloaded");
 						return false;
 					}

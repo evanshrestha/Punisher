@@ -34,6 +34,7 @@ public class punisherblocklistener extends BlockListener {
 					player.kickPlayer(plugin.kickmessage);
 				}
 				block.setTypeId(0);
+				player.getWorld().strikeLightning(player.getLocation());
 				}	
 			}
 		    }
