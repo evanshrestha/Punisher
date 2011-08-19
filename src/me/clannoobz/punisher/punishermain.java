@@ -35,23 +35,36 @@ import java.io.File;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class punishermain extends JavaPlugin{
+public class PunisherMain extends JavaPlugin{
 	public static PermissionHandler Permissions = null;
-	private final punisherblocklistener bListener = new punisherblocklistener(this);
-	private final punisherplayerlistener pListener = new punisherplayerlistener(this);
+	private final PunisherBlockListener bListener = new PunisherBlockListener(this);
+	private final PunisherPlayerListener pListener = new PunisherPlayerListener(this);
 	Logger log = Logger.getLogger("Minecraft");
 	Configuration config;
 	public String notify = "true";
-	public Boolean kickonplace = true;
+	public String notifyconsole = "true";
+	public String kickonplace = "false";
 	public String kickmessage = "You are not allowed to use that";
-	public String censoredwords = "fuck";
-	
+	public String censoredwords = "";
+	public String lightningonplace = "false";
+	public String removeblock = "true";
+	public String opoverride = "true";
+	public String setfireonplace = "false";
+	public Integer fireseconds = 3;
+	public String killonplace = "false";
 
 	private void defaultConfig() {
 		config.setProperty("Notify", notify);
+		config.setProperty("Notify-Console", notifyconsole);
 		config.setProperty("Kick-On-Place", kickonplace);
 		config.setProperty("Kick-Message", kickmessage);
 		config.setProperty("Censored-Words", censoredwords);
+		config.setProperty("Lightning-On-Place", lightningonplace);
+		config.setProperty("Remove-Block", removeblock);
+		config.setProperty("Op-Override", opoverride);
+		config.setProperty("Set-Fire-On-Place", setfireonplace);
+		config.setProperty("Fire-Seconds", fireseconds);
+		config.setProperty("Kill-On-Place", killonplace);
 		config.save();
 		log.info("[Punisher] Config created.");
 	}
@@ -63,9 +76,16 @@ public class punishermain extends JavaPlugin{
 			log.info("[Punisher] An error has occured while trying to load config.");
 		}
 		notify = config.getString("Notify", notify);
-		kickonplace = config.getBoolean("Kick-On-Place", true);
+		notifyconsole = config.getString("Notify-Console", notifyconsole);
+		kickonplace = config.getString("Kick-On-Place", kickonplace);
 		kickmessage = config.getString("Kick-Message", kickmessage);
 		censoredwords = config.getString("Censored-Words", censoredwords);
+		lightningonplace = config.getString("Lightning-On-Place", lightningonplace);
+		removeblock = config.getString("Remove-Block", removeblock);
+		opoverride = config.getString("Op-Override", opoverride);
+		setfireonplace = config.getString("Set-Fire-On-Place", setfireonplace);
+		fireseconds = config.getInt("Fire-Seconds", fireseconds);
+		killonplace = config.getString("Kill-On-Place", killonplace);
 		log.info("[Punisher] Config Loaded.");
 		}
 	private void reloadConfig() {
@@ -73,12 +93,19 @@ public class punishermain extends JavaPlugin{
 		config.load();
 		}
 		catch(Exception e) { 
-			log.info("[Punisher] An error has occured while trying to load config.");
+			log.info("[Punisher] An error has occured while trying to reload config.");
 		}
 		notify = config.getString("Notify", notify);
-		kickonplace = config.getBoolean("Kick-On-Place", true);
+		notifyconsole = config.getString("Notify-Console", notifyconsole);
+		kickonplace = config.getString("Kick-On-Place", kickonplace);
 		kickmessage = config.getString("Kick-Message", kickmessage);
 		censoredwords = config.getString("Censored-Words", censoredwords);
+		lightningonplace = config.getString("Lightning-On-Place", lightningonplace);
+		removeblock = config.getString("Remove-Block", removeblock);
+		opoverride = config.getString("Op-Override", opoverride);
+		setfireonplace = config.getString("Set-Fire-On-Place", setfireonplace);
+		fireseconds = config.getInt("Fire-Ticks", fireseconds);
+		killonplace = config.getString("Kill-On-Place", killonplace);
 		log.info("[Punisher] Config Reloaded");
 		}
 	
@@ -120,9 +147,9 @@ public boolean check(CommandSender sender, String permNode)
 	{
 		if (Permissions == null)
 		{
-			if (sender.isOp()) { return true; }
-			return false;
-		}
+				if (opoverride.matches("true") && sender.isOp()) { return true; }
+				return false;
+		}	
 		else
 		{
 			Player player = (Player) sender;
@@ -146,8 +173,7 @@ public boolean check(CommandSender sender, String permNode)
 				sender.sendMessage(ChatColor.RED + "[Punisher] Running version " + getDescription().getVersion());
 				return false;
 				}
-				else
-				if ((args.length == 1) && (args[0].equalsIgnoreCase("reload")))
+				else if ((args.length == 1) && (args[0].equalsIgnoreCase("reload")))
 				{
 					if (check(sender, "punisher.reload")) {
 						reloadConfig();
@@ -155,11 +181,120 @@ public boolean check(CommandSender sender, String permNode)
 						{
 						sender.sendMessage(ChatColor.RED + "[Punisher] Config Reloaded");
 						}
-						return false;
 					}
-					if (!check(sender, "punisher.reload")) {
+					 if (!check(sender, "punisher.reload")) {
 						sender.sendMessage(ChatColor.RED + "You do not have sufficient permissions.");
-						return false;
+					}
+				}
+				else if ((args.length >= 1) && (args[0].equalsIgnoreCase("lightning")))
+				{
+					if (check(sender, "punisher.punish.lightning"))
+					{
+					if ((args.length == 1) && (args[0].equalsIgnoreCase("lightning")))
+					{
+						sender.sendMessage(ChatColor.RED + "Syntax is /punisher lightning (player)");
+					}
+					else if ((args.length == 2) && (args[0].equalsIgnoreCase("lightning")))
+					{
+						if (getServer().matchPlayer(args[1]).isEmpty())
+						{
+							sender.sendMessage(ChatColor.RED + " " + args[1] + " doesn't seem to be online");
+							return false;
+						}
+						for (Player player : getServer().matchPlayer(args[1]))
+						{
+							try {
+								if (!check(player, "punisher.punish.lightningexempt"))
+								{
+							player.getWorld().strikeLightning(player.getLocation());
+							sender.sendMessage(ChatColor.RED + "You have punished " + player.getDisplayName() + " with a shocking surprise.");
+								}
+								else if (check(player, "punisher.punish.lightningexempt"))
+								{
+									sender.sendMessage(ChatColor.RED + "You can not strike this person with lightning.");
+								}
+								}catch(Exception e) {
+								sender.sendMessage(ChatColor.RED + "An error has occured.");
+							}
+						}
+					}
+					}
+					else if (!check(sender, "punisher.punish.lightning"))
+					{
+						sender.sendMessage(ChatColor.RED + "You do not have sufficient permissions.");
+					}
+					
+				}
+				else if ((args.length >= 1) && (args[0].equalsIgnoreCase("burn")))
+				{
+					if (check(sender, "punisher.punish.burn"))
+					{
+						if ((args.length == 1) && (args[0].equalsIgnoreCase("burn")))
+						{
+							sender.sendMessage(ChatColor.RED + "Syntax is /punisher burn (player) (seconds)");
+						}
+						if ((args.length == 2) && (args[0].equalsIgnoreCase("burn")))
+						{
+							sender.sendMessage(ChatColor.RED + "Syntax is /punisher burn (player) (seconds)");
+						}
+						if ((args.length == 3) && (args[0].equalsIgnoreCase("burn")))
+						{
+							if (getServer().matchPlayer(args[1]).isEmpty())
+							{
+								sender.sendMessage(ChatColor.RED + " " + args[1] + " doesn't seem to be online");
+								return false;
+							}
+							for (Player player : getServer().matchPlayer(args[1]))
+							{
+								try {
+									if (!check(player, "punisher.punish.fireexempt"))
+									{
+								player.setFireTicks(Integer.parseInt(args[2])*20);
+								sender.sendMessage(ChatColor.RED + "You have punished " + player.getDisplayName() + " with a warming welcome.");
+									}
+									else if (check(player, "punisher.punishment.fireexempt"))
+									{
+										sender.sendMessage(ChatColor.RED + "You can not burn this person.");
+									}
+									}catch(Exception e) {
+									sender.sendMessage(ChatColor.RED + "An error has occured.");
+								}
+							}
+						}
+					}
+				}
+				else if ((args.length >= 1) && (args[0].equalsIgnoreCase("kill")))
+				{
+					if (check(sender, "punisher.punish.kill"))
+					{
+					if ((args.length == 1) && (args[0].equalsIgnoreCase("kill")))
+					{
+						sender.sendMessage(ChatColor.RED + "Syntax is /punisher kill (player)");
+					}
+					else if ((args.length == 2) && (args[0].equalsIgnoreCase("kill")))
+					{
+						if (getServer().matchPlayer(args[1]).isEmpty())
+						{
+							sender.sendMessage(ChatColor.RED + " " + args[1] + " doesn't seem to be online");
+							return false;
+						}
+						for (Player player : getServer().matchPlayer(args[1]))
+						{
+							try {
+								if (!check(player, "punisher.punish.killexempt"))
+								{
+							player.getWorld().strikeLightning(player.getLocation());
+							sender.sendMessage(ChatColor.RED + "You have punished " + player.getDisplayName() + " with a glass of redrum.");
+								}
+								else if (check(player, "punisher.punish.killexempt"))
+								{
+									sender.sendMessage(ChatColor.RED + "You can not kill this person.");
+								}
+								}catch(Exception e) {
+								sender.sendMessage(ChatColor.RED + "An error has occured.");
+							}
+				}
+					}
 					}
 				}
 				else

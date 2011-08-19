@@ -6,9 +6,9 @@ import org.bukkit.event.player.PlayerListener;
 
 
 
-public class punisherplayerlistener extends PlayerListener {
-	private final punishermain plugin;
-	public punisherplayerlistener(punishermain instance)
+public class PunisherPlayerListener extends PlayerListener {
+	private final PunisherMain plugin;
+	public PunisherPlayerListener(PunisherMain instance)
 	{
 		plugin = instance;
 	}

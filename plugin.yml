@@ -1,5 +1,5 @@
 name: Punisher
-main: me.clannoobz.punisher.punishermain
+main: me.clannoobz.punisher.PunisherMain
 version: 0.1
 author:
 #***********
@@ -9,4 +9,10 @@ description: Punishes people if they do something wrong; griefing, breaking a ru
 commands:
   punisher:
     description: Tells version loaded.
+    usage:
+  punisher burn:
+    description: Punishes player with fire.
+    usage:
+  punisher lightning:
+    description: Punishes player with lightning.
     usage:
